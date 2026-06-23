@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getAuthenticatedUser } from "@/lib/auth";
+import { getAuthenticatedUser, requireAdmin } from "@/lib/auth";
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { searchParams } = new URL(request.url);
+  const lang = searchParams.get("lang") || "en";
   const authUser = getAuthenticatedUser(request);
-  if (!authUser || authUser.role !== "ADMIN") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  if (!requireAdmin(authUser)) {
+    return NextResponse.json({ error: lang === "ar" ? "غير مصرح" : "Unauthorized" }, { status: 403 });
   }
 
   try {
@@ -20,7 +22,7 @@ export async function PUT(
     });
     return NextResponse.json({ product });
   } catch {
-    return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
+    return NextResponse.json({ error: lang === "ar" ? "فشل تحديث المنتج" : "Failed to update product" }, { status: 500 });
   }
 }
 
@@ -28,9 +30,11 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { searchParams } = new URL(request.url);
+  const lang = searchParams.get("lang") || "en";
   const authUser = getAuthenticatedUser(request);
-  if (!authUser || authUser.role !== "ADMIN") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  if (!requireAdmin(authUser)) {
+    return NextResponse.json({ error: lang === "ar" ? "غير مصرح" : "Unauthorized" }, { status: 403 });
   }
 
   try {
@@ -38,6 +42,6 @@ export async function DELETE(
     await prisma.product.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch {
-    return NextResponse.json({ error: "Failed to delete product" }, { status: 500 });
+    return NextResponse.json({ error: lang === "ar" ? "فشل حذف المنتج" : "Failed to delete product" }, { status: 500 });
   }
 }

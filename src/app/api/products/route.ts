@@ -3,10 +3,12 @@ import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const category = searchParams.get("category");
+  const search = searchParams.get("search");
+  const lang = searchParams.get("lang") || "en";
+
   try {
-    const { searchParams } = new URL(request.url);
-    const category = searchParams.get("category");
-    const search = searchParams.get("search");
 
     const where: Prisma.ProductWhereInput = {};
 
@@ -28,6 +30,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ products });
   } catch {
-    return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 });
+    return NextResponse.json({ error: lang === "ar" ? "فشل تحميل المنتجات" : "Failed to fetch products" }, { status: 500 });
   }
 }

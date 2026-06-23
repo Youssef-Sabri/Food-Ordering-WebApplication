@@ -1,17 +1,8 @@
 "use client";
 
 import { useLanguage } from "@/contexts/LanguageContext";
-
-interface Product {
-  id: string;
-  nameEn: string;
-  nameAr: string;
-  descriptionEn: string;
-  descriptionAr: string;
-  category: string;
-  price: number;
-  image: string;
-}
+import { Product } from "@/lib/types";
+import { CATEGORY_LABELS, formatPrice } from "@/lib/constants";
 
 interface MenuCardProps {
   product: Product;
@@ -19,13 +10,13 @@ interface MenuCardProps {
 }
 
 export default function MenuCard({ product, onViewDetails }: MenuCardProps) {
-  const { lang } = useLanguage();
+  const { lang, dir } = useLanguage();
 
   return (
     <button
       onClick={() => onViewDetails(product)}
       className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg hover:border-orange-200/50 transition-all duration-300 text-left w-full"
-      dir={lang === "ar" ? "rtl" : "ltr"}
+      dir={dir}
     >
       <div className="relative h-40 bg-gray-100 overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -39,7 +30,7 @@ export default function MenuCard({ product, onViewDetails }: MenuCardProps) {
         />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
         <span className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[10px] font-semibold text-gray-700 px-2 py-0.5 rounded-full">
-          {product.category}
+          {lang === "en" ? CATEGORY_LABELS[product.category]?.en : CATEGORY_LABELS[product.category]?.ar}
         </span>
       </div>
       <div className="p-3.5">
@@ -52,7 +43,7 @@ export default function MenuCard({ product, onViewDetails }: MenuCardProps) {
           {lang === "en" ? product.descriptionEn : product.descriptionAr}
         </p>
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50">
-          <span className="text-orange-600 font-bold text-sm">{product.price} <span className="text-[10px] font-medium">EGP</span></span>
+          <span className="text-orange-600 font-bold text-sm">{formatPrice(product.price, lang)}</span>
           <span className="text-[11px] font-medium text-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             {lang === "en" ? "+ Quick Add" : "+ إضافة سريعة"}
           </span>

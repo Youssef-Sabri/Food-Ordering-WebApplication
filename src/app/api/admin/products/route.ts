@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getAuthenticatedUser } from "@/lib/auth";
+import { getAuthenticatedUser, requireAdmin } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const lang = searchParams.get("lang") || "en";
   const authUser = getAuthenticatedUser(request);
-  if (!authUser || authUser.role !== "ADMIN") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  if (!requireAdmin(authUser)) {
+    return NextResponse.json({ error: lang === "ar" ? "غير مصرح" : "Unauthorized" }, { status: 403 });
   }
 
   try {
@@ -18,6 +20,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ product }, { status: 201 });
   } catch {
-    return NextResponse.json({ error: "Failed to create product" }, { status: 500 });
+    return NextResponse.json({ error: lang === "ar" ? "فشل إنشاء المنتج" : "Failed to create product" }, { status: 500 });
   }
 }

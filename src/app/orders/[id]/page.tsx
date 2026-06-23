@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import OrderStepper from "@/components/OrderStepper";
+import { formatPrice } from "@/lib/constants";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import { CheckCircle, Package } from "lucide-react";
 
 interface OrderItem {
@@ -30,7 +32,7 @@ interface Order {
 }
 
 export default function OrderConfirmationPage() {
-  const { lang } = useLanguage();
+  const { lang, dir } = useLanguage();
   const { user, token, isLoading } = useAuth();
   const params = useParams();
   const router = useRouter();
@@ -74,25 +76,13 @@ export default function OrderConfirmationPage() {
     };
   }, [token, params.id]);
 
-  if (isLoading || !user) {
-    return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600" />
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600" />
-      </div>
-    );
+  if (isLoading || !user || loading) {
+    return <LoadingSpinner />;
   }
 
   if (!order) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-16 text-center" dir={lang === "ar" ? "rtl" : "ltr"}>
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center" dir={dir}>
         <Package size={48} className="mx-auto text-gray-300 mb-4" />
         <h1 className="text-xl font-bold mb-2">
           {lang === "en" ? "Order Not Found" : "الطلب غير موجود"}
@@ -108,7 +98,7 @@ export default function OrderConfirmationPage() {
   const estimatedDelivery = new Date(createdAt.getTime() + 45 * 60000);
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8" dir={lang === "ar" ? "rtl" : "ltr"}>
+    <div className="max-w-2xl mx-auto px-4 py-8" dir={dir}>
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6 text-center">
         <CheckCircle size={48} className="mx-auto text-green-500 mb-3" />
         <h1 className="text-2xl font-bold text-green-600 mb-1">
@@ -141,13 +131,13 @@ export default function OrderConfirmationPage() {
               <span className="text-gray-600">
                 {lang === "en" ? item.product.nameEn : item.product.nameAr} x{item.quantity}
               </span>
-              <span>{item.price * item.quantity} EGP</span>
+                    <span>{formatPrice(item.price * item.quantity, lang)}</span>
             </div>
           ))}
         </div>
         <div className="border-t border-gray-100 mt-3 pt-3 flex justify-between font-semibold">
           <span>{lang === "en" ? "Total" : "المجموع"}</span>
-          <span className="text-orange-600">{order.totalAmount} EGP</span>
+          <span className="text-orange-600">{formatPrice(order.totalAmount, lang)}</span>
         </div>
       </div>
 

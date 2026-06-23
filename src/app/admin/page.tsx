@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { formatPrice } from "@/lib/constants";
 import { ShoppingBag, DollarSign, Package, LayoutDashboard, ClipboardList } from "lucide-react";
 
 interface Overview {
@@ -14,7 +15,7 @@ interface Overview {
 }
 
 export default function AdminPage() {
-  const { lang } = useLanguage();
+  const { lang, dir } = useLanguage();
   const { user, token } = useAuth();
   const router = useRouter();
   const [overview, setOverview] = useState<Overview | null>(null);
@@ -45,7 +46,7 @@ export default function AdminPage() {
     },
     {
       label: lang === "en" ? "Total Revenue" : "إجمالي الإيرادات",
-      value: `${overview?.totalRevenue ?? 0} EGP`,
+      value: formatPrice(overview?.totalRevenue ?? 0, lang),
       icon: DollarSign,
       color: "bg-green-500",
     },
@@ -58,7 +59,7 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8" dir={lang === "ar" ? "rtl" : "ltr"}>
+    <div className="max-w-6xl mx-auto px-4 py-8" dir={dir}>
       <div className="flex items-center gap-2 mb-8">
         <LayoutDashboard size={24} className="text-orange-600" />
         <h1 className="text-2xl font-bold">

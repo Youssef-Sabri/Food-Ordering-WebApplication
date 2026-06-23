@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import ErrorBanner from "@/components/ErrorBanner";
 
 export default function RegisterPage() {
-  const { lang } = useLanguage();
+  const { lang, dir } = useLanguage();
   const { register } = useAuth();
   const router = useRouter();
   const [name, setName] = useState("");
@@ -25,22 +26,20 @@ export default function RegisterPage() {
       await register(name, email, password, phone);
       router.push("/");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Registration failed");
+      setError(err instanceof Error ? err.message : (lang === "en" ? "Registration failed" : "فشل إنشاء الحساب"));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4" dir={lang === "ar" ? "rtl" : "ltr"}>
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4" dir={dir}>
       <div className="max-w-md w-full bg-white rounded-xl shadow-sm border border-gray-100 p-8">
         <h1 className="text-2xl font-bold text-center mb-6">
           {lang === "en" ? "Create Account" : "إنشاء حساب"}
         </h1>
 
-        {error && (
-          <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg mb-4">{error}</div>
-        )}
+        <ErrorBanner message={error} />
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

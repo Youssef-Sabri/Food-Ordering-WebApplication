@@ -4,17 +4,8 @@ import { X, Plus, Minus, ShoppingCart, Star } from "lucide-react";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
-
-interface Product {
-  id: string;
-  nameEn: string;
-  nameAr: string;
-  descriptionEn: string;
-  descriptionAr: string;
-  category: string;
-  price: number;
-  image: string;
-}
+import { Product } from "@/lib/types";
+import { CATEGORY_LABELS, formatPrice } from "@/lib/constants";
 
 interface ItemDetailModalProps {
   product: Product;
@@ -22,7 +13,7 @@ interface ItemDetailModalProps {
 }
 
 export default function ItemDetailModal({ product, onClose }: ItemDetailModalProps) {
-  const { lang } = useLanguage();
+  const { lang, dir } = useLanguage();
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
@@ -47,7 +38,7 @@ export default function ItemDetailModal({ product, onClose }: ItemDetailModalPro
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
           className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden animate-scaleIn"
-          dir={lang === "ar" ? "rtl" : "ltr"}
+          dir={dir}
         >
           <div className="relative">
             <div className="h-52 bg-gray-100 overflow-hidden">
@@ -68,7 +59,7 @@ export default function ItemDetailModal({ product, onClose }: ItemDetailModalPro
               <X size={16} />
             </button>
             <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-xs font-semibold text-gray-700 px-3 py-1 rounded-full">
-              {product.category}
+              {lang === "en" ? CATEGORY_LABELS[product.category]?.en : CATEGORY_LABELS[product.category]?.ar}
             </span>
           </div>
 
@@ -82,10 +73,9 @@ export default function ItemDetailModal({ product, onClose }: ItemDetailModalPro
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} size={12} className="fill-amber-400 text-amber-400" />
                   ))}
-                  <span className="text-xs text-gray-400 ml-1">(24)</span>
                 </div>
+                <p className="text-xl font-bold text-orange-600">{formatPrice(product.price, lang)}</p>
               </div>
-              <p className="text-xl font-bold text-orange-600">{product.price} <span className="text-sm font-medium">EGP</span></p>
             </div>
 
             <p className="text-gray-500 text-sm leading-relaxed">

@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FoodDash - Food Ordering",
-  description: "Online food ordering web application",
+  title: "FoodDash",
+  description: "FoodDash - Online food ordering web application | تطبيق طلب الطعام أونلاين",
 };
 
 export default function RootLayout({

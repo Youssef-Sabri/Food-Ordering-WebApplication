@@ -5,10 +5,13 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import ErrorBanner from "@/components/ErrorBanner";
+import { formatPrice } from "@/lib/constants";
 import { CreditCard, DollarSign } from "lucide-react";
 
 export default function CheckoutPage() {
-  const { lang } = useLanguage();
+  const { lang, dir } = useLanguage();
   const { items, subtotal, clearCart } = useCart();
   const { user, token, isLoading } = useAuth();
   const router = useRouter();
@@ -19,25 +22,13 @@ export default function CheckoutPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Redirect to login if user is not authenticated
-    if (!isLoading && !user) {
-      router.push("/login");
-    }
-  }, [isLoading, user, router]);
-
-  useEffect(() => {
-    // Redirect to home if cart is empty
-    if (!isLoading && user && items.length === 0) {
-      router.push("/");
-    }
+    if (isLoading) return;
+    if (!user) router.push("/login");
+    else if (items.length === 0) router.push("/");
   }, [isLoading, user, items, router]);
 
   if (isLoading || !user || items.length === 0) {
-    return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600" />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,7 +36,9 @@ export default function CheckoutPage() {
     setError("");
     setLoading(true);
 
-    const addressStr = `${address.street}, Floor ${address.floor}, Apartment ${address.apartment}, Phone: ${address.phone}`;
+    const addressStr = lang === "en"
+      ? `${address.street}, Floor ${address.floor}, Apartment ${address.apartment}, Phone: ${address.phone}`
+      : `${address.street}، الطابق ${address.floor}، شقة ${address.apartment}، الهاتف: ${address.phone}`;
 
     if (paymentMethod === "ONLINE") {
       if (!card.holder || !card.number || !card.expiry || !card.cvv) {
@@ -56,7 +49,7 @@ export default function CheckoutPage() {
     }
 
     try {
-      const res = await fetch("/api/orders", {
+      const res = await fetch(`/api/orders?lang=${lang}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -79,21 +72,19 @@ export default function CheckoutPage() {
       clearCart();
       router.push(`/orders/${data.order.id}`);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Checkout failed");
+      setError(err instanceof Error ? err.message : (lang === "en" ? "Checkout failed" : "فشل إتمام الطلب"));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8" dir={lang === "ar" ? "rtl" : "ltr"}>
+    <div className="max-w-5xl mx-auto px-4 py-8" dir={dir}>
       <h1 className="text-2xl font-bold mb-6">
         {lang === "en" ? "Checkout" : "الدفع"}
       </h1>
 
-      {error && (
-        <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg mb-4">{error}</div>
-      )}
+      <ErrorBanner message={error} />
 
       <form onSubmit={handleSubmit}>
         <div className="grid md:grid-cols-2 gap-8">
@@ -237,13 +228,13 @@ export default function CheckoutPage() {
                     <span className="text-gray-600">
                       {lang === "en" ? item.nameEn : item.nameAr} x{item.quantity}
                     </span>
-                    <span>{item.price * item.quantity} EGP</span>
+                    <span>{formatPrice(item.price * item.quantity, lang)}</span>
                   </div>
                 ))}
               </div>
               <div className="border-t border-gray-100 pt-3 flex items-center justify-between font-semibold">
                 <span>{lang === "en" ? "Total" : "المجموع"}</span>
-                <span className="text-orange-600">{subtotal} EGP</span>
+                <span className="text-orange-600">{formatPrice(subtotal, lang)}</span>
               </div>
 
               <button
@@ -253,9 +244,7 @@ export default function CheckoutPage() {
               >
                 {loading
                   ? (lang === "en" ? "Processing..." : "جاري المعالجة...")
-                  : (lang === "en"
-                      ? `Place Order - ${subtotal} EGP`
-                      : `تأكيد الطلب - ${subtotal} ج.م`)}
+                  : (lang === "en" ? `Place Order - ${formatPrice(subtotal, lang)}` : `تأكيد الطلب - ${formatPrice(subtotal, lang)}`)}
               </button>
             </div>
           </div>

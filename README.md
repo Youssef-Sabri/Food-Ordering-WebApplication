@@ -1,6 +1,6 @@
 # FoodDash - Food Ordering Web Application
 
-A full-stack food ordering prototype built with Next.js, SQLite, and Prisma.
+Full-stack food ordering prototype with bilingual (EN/AR) support, admin dashboard, and local image uploads.
 
 ## Quick Start
 
@@ -20,4 +20,19 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Tech Stack
 
-Next.js 16 · TypeScript · Tailwind CSS · SQLite · Prisma · JWT · bcrypt
+Next.js 16 · TypeScript · Tailwind CSS v4 · SQLite · Prisma · JWT · bcrypt
+
+## Features
+
+- Bilingual menu with category tabs and search
+- Cart with slide-out drawer and quantity controls
+- Cash on Delivery / simulated Online Payment
+- Real-time order status tracking with visual stepper
+- Role-based auth (Customer / Admin)
+- Admin dashboard with paginated Products CRUD and Orders management
+- Local image upload for products
+- RTL support for Arabic
+
+## Seed Data
+
+12 menu items in 4 categories (Burgers, Pizza, Drinks, Desserts) with real Unsplash images.

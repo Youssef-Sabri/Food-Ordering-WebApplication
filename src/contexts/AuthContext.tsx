@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { useLanguage } from "./LanguageContext";
 
 interface User {
   id: string;
@@ -21,6 +22,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { lang } = useLanguage();
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,39 +47,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         })
         .finally(() => setIsLoading(false));
     } else {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 0);
+      setIsLoading(false);
     }
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const res = await fetch("/api/auth/login", {
+    const res = await fetch(`/api/auth/login?lang=${lang}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Login failed");
+    if (!res.ok) throw new Error(data.error || (lang === "en" ? "Login failed" : "فشل تسجيل الدخول"));
     localStorage.setItem("token", data.token);
     setToken(data.token);
     setUser(data.user);
-  }, []);
+  }, [lang]);
 
   const register = useCallback(
     async (name: string, email: string, password: string, phone: string) => {
-      const res = await fetch("/api/auth/register", {
+      const res = await fetch(`/api/auth/register?lang=${lang}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password, phone }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Registration failed");
+      if (!res.ok) throw new Error(data.error || (lang === "en" ? "Registration failed" : "فشل إنشاء الحساب"));
       localStorage.setItem("token", data.token);
       setToken(data.token);
       setUser(data.user);
     },
-    []
+    [lang]
   );
 
   const logout = useCallback(() => {

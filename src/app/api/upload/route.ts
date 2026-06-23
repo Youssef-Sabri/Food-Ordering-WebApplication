@@ -1,20 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuthenticatedUser } from "@/lib/auth";
+import { getAuthenticatedUser, requireAdmin } from "@/lib/auth";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { randomUUID } from "crypto";
 
 export async function POST(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const lang = searchParams.get("lang") || "en";
   const authUser = getAuthenticatedUser(request);
-  if (!authUser || authUser.role !== "ADMIN") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  if (!requireAdmin(authUser)) {
+    return NextResponse.json({ error: lang === "ar" ? "غير مصرح" : "Unauthorized" }, { status: 403 });
   }
 
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
     if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+      return NextResponse.json({ error: lang === "ar" ? "لم يتم توفير ملف" : "No file provided" }, { status: 400 });
     }
 
     const ext = file.name.split(".").pop() || "jpg";
@@ -28,6 +30,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: `/uploads/${filename}` });
   } catch {
-    return NextResponse.json({ error: "Failed to upload file" }, { status: 500 });
+    return NextResponse.json({ error: lang === "ar" ? "فشل رفع الملف" : "Failed to upload file" }, { status: 500 });
   }
 }

@@ -15,11 +15,11 @@ interface NavbarProps {
 export default function Navbar({ onCartClick }: NavbarProps) {
   const { user, logout } = useAuth();
   const { totalItems } = useCart();
-  const { lang } = useLanguage();
+  const { lang, dir } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-sm" dir={lang === "ar" ? "rtl" : "ltr"}>
+    <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-sm" dir={dir}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-2 group">
@@ -119,7 +119,7 @@ export default function Navbar({ onCartClick }: NavbarProps) {
           {user?.role === "ADMIN" && (
             <Link href="/admin" className="block text-sm font-medium text-gray-600 py-1" onClick={() => setMobileMenuOpen(false)}>
               <LayoutDashboard size={16} className="inline mr-2" />
-              {lang === "en" ? "Admin Dashboard" : "لوحة التحكم"}
+              {lang === "en" ? "Admin" : "لوحة التحكم"}
             </Link>
           )}
           {user ? (

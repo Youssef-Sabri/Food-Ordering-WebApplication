@@ -3,9 +3,11 @@ import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUser, requireAdmin } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const lang = searchParams.get("lang") || "en";
   const authUser = getAuthenticatedUser(request);
   if (!requireAdmin(authUser)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    return NextResponse.json({ error: lang === "ar" ? "غير مصرح" : "Unauthorized" }, { status: 403 });
   }
 
   try {
@@ -22,6 +24,6 @@ export async function GET(request: NextRequest) {
       totalProducts,
     });
   } catch {
-    return NextResponse.json({ error: "Failed to fetch overview" }, { status: 500 });
+    return NextResponse.json({ error: lang === "ar" ? "فشل تحميل الملخص" : "Failed to fetch overview" }, { status: 500 });
   }
 }

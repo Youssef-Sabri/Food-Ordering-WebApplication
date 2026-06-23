@@ -3,12 +3,15 @@ import { prisma } from "@/lib/prisma";
 import { comparePassword, generateToken } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const lang = searchParams.get("lang") || "en";
+
   try {
     const { email, password } = await request.json();
 
     if (!email || !password) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { error: lang === "ar" ? "البريد الإلكتروني وكلمة المرور مطلوبان" : "Email and password are required" },
         { status: 400 }
       );
     }
@@ -16,7 +19,7 @@ export async function POST(request: NextRequest) {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return NextResponse.json(
-        { error: "Invalid email or password" },
+        { error: lang === "ar" ? "بريد إلكتروني أو كلمة مرور غير صحيحة" : "Invalid email or password" },
         { status: 401 }
       );
     }
@@ -24,7 +27,7 @@ export async function POST(request: NextRequest) {
     const valid = await comparePassword(password, user.password);
     if (!valid) {
       return NextResponse.json(
-        { error: "Invalid email or password" },
+        { error: lang === "ar" ? "بريد إلكتروني أو كلمة مرور غير صحيحة" : "Invalid email or password" },
         { status: 401 }
       );
     }
@@ -40,6 +43,9 @@ export async function POST(request: NextRequest) {
       user: { id: user.id, name: user.name, email: user.email, role: user.role },
     });
   } catch {
-    return NextResponse.json({ error: "Login failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: lang === "ar" ? "فشل تسجيل الدخول" : "Login failed" },
+      { status: 500 }
+    );
   }
 }

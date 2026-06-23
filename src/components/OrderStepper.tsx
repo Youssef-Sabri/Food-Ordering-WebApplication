@@ -14,19 +14,19 @@ const steps = [
   { key: "DELIVERED", icon: Package },
 ];
 
+const labels: Record<string, { en: string; ar: string }> = {
+  PENDING: { en: "Order Placed", ar: "تم الطلب" },
+  PREPARING: { en: "Preparing", ar: "يتم التحضير" },
+  OUT_FOR_DELIVERY: { en: "Out for Delivery", ar: "في الطريق" },
+  DELIVERED: { en: "Delivered", ar: "تم التوصيل" },
+};
+
 export default function OrderStepper({ status }: OrderStepperProps) {
-  const { lang } = useLanguage();
+  const { lang, dir } = useLanguage();
   const currentIndex = steps.findIndex((s) => s.key === status);
 
-  const labels: Record<string, { en: string; ar: string }> = {
-    PENDING: { en: "Order Placed", ar: "تم الطلب" },
-    PREPARING: { en: "Preparing", ar: "يتم التحضير" },
-    OUT_FOR_DELIVERY: { en: "Out for Delivery", ar: "في الطريق" },
-    DELIVERED: { en: "Delivered", ar: "تم التوصيل" },
-  };
-
   return (
-    <div className="w-full py-6" dir={lang === "ar" ? "rtl" : "ltr"}>
+    <div className="w-full py-6" dir={dir}>
       <div className="flex items-center justify-between relative">
         {steps.map((step, index) => {
           const Icon = step.icon;
