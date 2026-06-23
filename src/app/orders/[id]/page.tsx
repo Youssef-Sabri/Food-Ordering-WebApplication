@@ -111,7 +111,7 @@ export default function OrderConfirmationPage() {
               <span className="text-gray-600">
                 {lang === "en" ? item.product.nameEn : item.product.nameAr} x{`\u200E${item.quantity}\u200E`}
               </span>
-                    <span>{formatPrice(item.price * item.quantity, lang)}</span>
+              <span>{formatPrice(item.price * item.quantity, lang)}</span>
             </div>
           ))}
         </div>

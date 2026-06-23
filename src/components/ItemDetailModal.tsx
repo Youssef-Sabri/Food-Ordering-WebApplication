@@ -116,7 +116,6 @@ export default function ItemDetailModal({ product, onClose }: ItemDetailModalPro
         </div>
       </div>
 
-
     </>
   );
 }
