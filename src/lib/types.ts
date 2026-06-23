@@ -15,7 +15,7 @@ export interface Category {
   nameAr: string;
 }
 
-export interface OrderItem {
+interface OrderItem {
   id: string;
   quantity: number;
   price: number;
