@@ -1,7 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/contexts/LanguageContext";
-import { CheckCircle, Package, CookingPot, Truck, ClipboardCheck } from "lucide-react";
+import { CheckCircle, Package, CookingPot, Truck, ClipboardCheck, XCircle } from "lucide-react";
 
 interface OrderStepperProps {
   status: string;
@@ -24,6 +24,17 @@ const labels: Record<string, { en: string; ar: string }> = {
 export default function OrderStepper({ status }: OrderStepperProps) {
   const { lang, dir } = useLanguage();
   const currentIndex = steps.findIndex((s) => s.key === status);
+
+  if (status === "CANCELLED") {
+    return (
+      <div className="w-full py-6 text-center" dir={dir}>
+        <div className="inline-flex items-center gap-2 bg-red-50 text-red-700 px-4 py-2 rounded-full">
+          <XCircle size={20} />
+          <span className="font-semibold">{lang === "en" ? "Order Cancelled" : "الطلب ملغي"}</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full py-6" dir={dir}>

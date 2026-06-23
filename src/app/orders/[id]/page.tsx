@@ -9,7 +9,7 @@ import OrderStepper from "@/components/OrderStepper";
 import { formatPrice } from "@/lib/constants";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { Order } from "@/lib/types";
-import { CheckCircle, Package } from "lucide-react";
+import { CheckCircle, Package, XCircle } from "lucide-react";
 
 export default function OrderConfirmationPage() {
   const { lang, dir } = useLanguage();
@@ -74,24 +74,39 @@ export default function OrderConfirmationPage() {
     );
   }
 
+  const isCancelled = order.status === "CANCELLED";
   const createdAt = new Date(order.createdAt);
   const estimatedDelivery = new Date(createdAt.getTime() + 45 * 60000);
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8" dir={dir}>
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6 text-center">
-        <CheckCircle size={48} className="mx-auto text-green-500 mb-3" />
-        <h1 className="text-2xl font-bold text-green-600 mb-1">
-          {lang === "en" ? "Order Confirmed!" : "تم تأكيد الطلب!"}
+      <div className={`rounded-xl shadow-sm border p-6 mb-6 text-center ${
+        isCancelled
+          ? "bg-red-50 border-red-100"
+          : "bg-white border-gray-100"
+      }`}>
+        {isCancelled ? (
+          <XCircle size={48} className="mx-auto text-red-500 mb-3" />
+        ) : (
+          <CheckCircle size={48} className="mx-auto text-green-500 mb-3" />
+        )}
+        <h1 className={`text-2xl font-bold mb-1 ${
+          isCancelled ? "text-red-600" : "text-green-600"
+        }`}>
+          {isCancelled
+            ? (lang === "en" ? "Order Cancelled" : "تم إلغاء الطلب")
+            : (lang === "en" ? "Order Confirmed!" : "تم تأكيد الطلب!")}
         </h1>
         <p className="text-gray-500">
           {lang === "en" ? "Order ID:" : "رقم الطلب:"} {order.id.slice(0, 8).toUpperCase()}
         </p>
-        <p className="text-sm text-gray-400 mt-1">
-          {lang === "en"
-            ? `Estimated delivery by ${estimatedDelivery.toLocaleTimeString()}`
-            : `الوصول المتوقع بحلول ${estimatedDelivery.toLocaleTimeString()}`}
-        </p>
+        {!isCancelled && (
+          <p className="text-sm text-gray-400 mt-1">
+            {lang === "en"
+              ? `Estimated delivery by ${estimatedDelivery.toLocaleTimeString()}`
+              : `الوصول المتوقع بحلول ${estimatedDelivery.toLocaleTimeString()}`}
+          </p>
+        )}
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">

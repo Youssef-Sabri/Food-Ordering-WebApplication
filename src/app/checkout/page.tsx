@@ -36,9 +36,10 @@ export default function CheckoutPage() {
     setError("");
     setLoading(true);
 
+    const phoneLrm = `\u200E${address.phone}\u200E`;
     const addressStr = lang === "en"
-      ? `${address.street}, Floor ${address.floor}, Apartment ${address.apartment}, Phone: ${address.phone}`
-      : `${address.street}، الطابق ${address.floor}، شقة ${address.apartment}، الهاتف: ${address.phone}`;
+      ? `${address.street}, Floor ${address.floor}, Apartment ${address.apartment}, Phone: ${phoneLrm}`
+      : `${address.street}، الطابق ${address.floor}، شقة ${address.apartment}، الهاتف: ${phoneLrm}`;
 
     if (paymentMethod === "ONLINE") {
       if (!card.holder || !card.number || !card.expiry || !card.cvv) {
@@ -126,6 +127,7 @@ export default function CheckoutPage() {
                   value={address.phone}
                   onChange={(e) => setAddress({ ...address, phone: e.target.value })}
                   required
+                  dir="ltr"
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>

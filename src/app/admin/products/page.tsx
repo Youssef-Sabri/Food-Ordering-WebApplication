@@ -8,6 +8,7 @@ import { useAdminGuard } from "@/lib/hooks";
 import { formatPrice } from "@/lib/constants";
 import { Product, Category } from "@/lib/types";
 import Pagination from "@/components/Pagination";
+import ConfirmModal from "@/components/ConfirmModal";
 import { Plus, Edit2, Trash2, ArrowLeft } from "lucide-react";
 
 const EMPTY_FORM = { nameEn: "", nameAr: "", descriptionEn: "", descriptionAr: "", category: "Burgers", price: 0, image: "" };
@@ -26,6 +27,7 @@ export default function AdminProductsPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const fetchProducts = useCallback(async () => {
     const res = await fetch("/api/products");
@@ -83,12 +85,13 @@ export default function AdminProductsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(lang === "en" ? "Are you sure?" : "هل أنت متأكد؟")) return;
-    await fetch(`/api/admin/products/${id}`, {
+  const handleDeleteConfirm = async () => {
+    if (!deleteId) return;
+    await fetch(`/api/admin/products/${deleteId}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
+    setDeleteId(null);
     fetchProducts();
   };
 
@@ -282,7 +285,7 @@ export default function AdminProductsPage() {
                           <Edit2 size={14} />
                         </button>
                         <button
-                          onClick={() => handleDelete(product.id)}
+                          onClick={() => setDeleteId(product.id)}
                           className="p-1.5 text-red-600 hover:bg-red-50 rounded"
                         >
                           <Trash2 size={14} />
@@ -296,6 +299,16 @@ export default function AdminProductsPage() {
           </div>
         )}
       </Pagination>
+
+      <ConfirmModal
+        isOpen={deleteId !== null}
+        title={lang === "en" ? "Delete Product" : "حذف المنتج"}
+        message={lang === "en" ? "Are you sure you want to delete this product? This action cannot be undone." : "هل أنت متأكد من حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء."}
+        confirmLabel={lang === "en" ? "Delete" : "حذف"}
+        cancelLabel={lang === "en" ? "Cancel" : "إلغاء"}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 }

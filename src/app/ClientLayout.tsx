@@ -48,7 +48,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
               </h4>
               <ul className="space-y-2 text-sm">
                 <li>info@fooddash.com</li>
-                <li>+20 100 000 0000</li>
+                <li><span dir="ltr">+20 100 000 0000</span></li>
                 <li>
                   {lang === "en" ? "Cairo, Egypt" : "القاهرة، مصر"}
                 </li>

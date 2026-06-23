@@ -9,6 +9,7 @@ import ErrorBanner from "@/components/ErrorBanner";
 import Pagination from "@/components/Pagination";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { Category } from "@/lib/types";
+import ConfirmModal from "@/components/ConfirmModal";
 import { Plus, ArrowLeft, Edit2, Trash2 } from "lucide-react";
 
 const ITEMS_PER_PAGE = 10;
@@ -24,6 +25,7 @@ export default function AdminCategoriesPage() {
   const [editing, setEditing] = useState<Category | null>(null);
   const [form, setForm] = useState({ nameEn: "", nameAr: "" });
   const [error, setError] = useState("");
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const fetchCategories = useCallback(async () => {
     const res = await fetch("/api/categories");
@@ -76,17 +78,17 @@ export default function AdminCategoriesPage() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(lang === "en" ? "Delete this category?" : "حذف هذه الفئة؟")) return;
-
+  const handleDeleteConfirm = async () => {
+    if (!deleteId) return;
     await fetch("/api/admin/categories", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ id: deleteId }),
     });
+    setDeleteId(null);
     fetchCategories();
   };
 
@@ -169,7 +171,7 @@ export default function AdminCategoriesPage() {
                         <button onClick={() => handleEdit(cat)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded mr-1">
                           <Edit2 size={14} />
                         </button>
-                        <button onClick={() => handleDelete(cat.id)} className="p-1.5 text-red-600 hover:bg-red-50 rounded">
+                        <button                           onClick={() => setDeleteId(cat.id)} className="p-1.5 text-red-600 hover:bg-red-50 rounded">
                           <Trash2 size={14} />
                         </button>
                       </td>
@@ -181,6 +183,16 @@ export default function AdminCategoriesPage() {
           </div>
         )}
       </Pagination>
+
+      <ConfirmModal
+        isOpen={deleteId !== null}
+        title={lang === "en" ? "Delete Category" : "حذف الفئة"}
+        message={lang === "en" ? "Are you sure you want to delete this category? Products in this category will not be deleted." : "هل أنت متأكد من حذف هذه الفئة؟ لن يتم حذف المنتجات في هذه الفئة."}
+        confirmLabel={lang === "en" ? "Delete" : "حذف"}
+        cancelLabel={lang === "en" ? "Cancel" : "إلغاء"}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 }
