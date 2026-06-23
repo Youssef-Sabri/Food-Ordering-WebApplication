@@ -2,7 +2,7 @@
 
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Product } from "@/lib/types";
-import { CATEGORY_LABELS, formatPrice } from "@/lib/constants";
+import { CATEGORY_LABELS, formatPrice, imgError } from "@/lib/constants";
 
 interface MenuCardProps {
   product: Product;
@@ -24,9 +24,7 @@ export default function MenuCard({ product, onViewDetails }: MenuCardProps) {
           src={product.image}
           alt={lang === "en" ? product.nameEn : product.nameAr}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-          onError={(e) => {
-            (e.target as HTMLImageElement).style.display = "none";
-          }}
+          onError={imgError}
         />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
         <span className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[10px] font-semibold text-gray-700 px-2 py-0.5 rounded-full">

@@ -3,7 +3,7 @@
 import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { formatPrice } from "@/lib/constants";
+import { formatPrice, imgError } from "@/lib/constants";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import EmptyState from "@/components/EmptyState";
@@ -35,7 +35,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         onClick={onClose}
       />
       <div
-        className={`fixed top-0 ${lang === "ar" ? "left-0" : "right-0"} h-full w-full max-w-sm bg-white z-50 shadow-2xl transform transition-transform duration-300 ${isOpen ? "translate-x-0" : lang === "ar" ? "-translate-x-full" : "translate-x-full"}`}
+        className={`fixed top-0 ${lang === "ar" ? "left-0" : "right-0"} h-full w-full max-w-sm bg-white z-50 shadow-2xl transform ${isOpen ? "transition-transform duration-300 translate-x-0" : lang === "ar" ? "-translate-x-full" : "translate-x-full"}`}
         dir={dir}
       >
         <div className="flex flex-col h-full">
@@ -74,9 +74,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         src={item.image}
                         alt={lang === "en" ? item.nameEn : item.nameAr}
                         className="w-full h-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = "none";
-                        }}
+                        onError={imgError}
                       />
                     </div>
                     <div className="flex-1 min-w-0">

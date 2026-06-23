@@ -5,24 +5,24 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { CATEGORIES, CATEGORY_LABELS, formatPrice } from "@/lib/constants";
-import { Product } from "@/lib/types";
+import { formatPrice } from "@/lib/constants";
+import { Product, Category } from "@/lib/types";
 import Pagination from "@/components/Pagination";
 import { Plus, Edit2, Trash2, ArrowLeft } from "lucide-react";
+
+const EMPTY_FORM = { nameEn: "", nameAr: "", descriptionEn: "", descriptionAr: "", category: "Burgers", price: 0, image: "" };
+const ITEMS_PER_PAGE = 10;
 
 export default function AdminProductsPage() {
   const { lang, dir } = useLanguage();
   const { user, token } = useAuth();
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
-  const ITEMS_PER_PAGE = 10;
-  const [form, setForm] = useState({
-    nameEn: "", nameAr: "", descriptionEn: "", descriptionAr: "",
-    category: "Burgers", price: 0, image: "",
-  });
+  const [form, setForm] = useState(EMPTY_FORM);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -40,6 +40,9 @@ export default function AdminProductsPage() {
       return;
     }
     fetchProducts();
+    fetch("/api/categories")
+      .then((res) => res.json())
+      .then((data) => setCategories(data.categories));
   }, [user, router, fetchProducts]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,11 +81,7 @@ export default function AdminProductsPage() {
     setUploading(false);
 
     if (res.ok) {
-      setShowForm(false);
-      setEditing(null);
-      setImageFile(null);
-      setImagePreview(null);
-      setForm({ nameEn: "", nameAr: "", descriptionEn: "", descriptionAr: "", category: "Burgers", price: 0, image: "" });
+      resetForm();
       fetchProducts();
     }
   };
@@ -94,6 +93,14 @@ export default function AdminProductsPage() {
       headers: { Authorization: `Bearer ${token}` },
     });
     fetchProducts();
+  };
+
+  const resetForm = () => {
+    setShowForm(false);
+    setEditing(null);
+    setForm(EMPTY_FORM);
+    setImageFile(null);
+    setImagePreview(null);
   };
 
   const handleEdit = (product: Product) => {
@@ -130,7 +137,7 @@ export default function AdminProductsPage() {
             setEditing(null);
             setImageFile(null);
             setImagePreview(null);
-            setForm({ nameEn: "", nameAr: "", descriptionEn: "", descriptionAr: "", category: "Burgers", price: 0, image: "" });
+            setForm(EMPTY_FORM);
             setShowForm(!showForm);
           }}
           className="flex items-center gap-1 bg-orange-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-orange-700 transition-colors"
@@ -181,10 +188,11 @@ export default function AdminProductsPage() {
             <select
               value={form.category}
               onChange={(e) => setForm({ ...form, category: e.target.value })}
-              className="px-3 py-2 border border-gray-200 rounded-lg"
+              className="px-3 py-2 border border-gray-200 rounded-lg bg-white appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center", paddingRight: "32px" }}
             >
-              {CATEGORIES.filter((c) => c !== "All").map((cat) => (
-                <option key={cat} value={cat}>{lang === "en" ? CATEGORY_LABELS[cat]?.en : CATEGORY_LABELS[cat]?.ar}</option>
+              {categories.map((cat) => (
+                <option key={cat.nameEn} value={cat.nameEn}>{lang === "en" ? cat.nameEn : cat.nameAr}</option>
               ))}
             </select>
             <input
@@ -235,7 +243,7 @@ export default function AdminProductsPage() {
             </button>
             <button
               type="button"
-              onClick={() => { setShowForm(false); setEditing(null); setImageFile(null); setImagePreview(null); }}
+              onClick={resetForm}
               className="bg-gray-100 text-gray-600 px-6 py-2 rounded-lg text-sm hover:bg-gray-200 transition-colors"
             >
               {lang === "en" ? "Cancel" : "إلغاء"}
@@ -265,7 +273,7 @@ export default function AdminProductsPage() {
                       <td className="p-3">{product.nameAr}</td>
                       <td className="p-3">
                         <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">
-                          {lang === "en" ? CATEGORY_LABELS[product.category]?.en : CATEGORY_LABELS[product.category]?.ar}
+                          {(lang === "en" ? categories.find((c) => c.nameEn === product.category)?.nameEn : categories.find((c) => c.nameEn === product.category)?.nameAr) || product.category}
                         </span>
                       </td>
                       <td className="p-3 font-medium">{formatPrice(product.price, lang)}</td>

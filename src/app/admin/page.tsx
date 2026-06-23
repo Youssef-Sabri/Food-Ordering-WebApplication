@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatPrice } from "@/lib/constants";
-import { ShoppingBag, DollarSign, Package, LayoutDashboard, ClipboardList } from "lucide-react";
+import { ShoppingBag, DollarSign, Package, LayoutDashboard, ClipboardList, Tags } from "lucide-react";
 
 interface Overview {
   totalOrders: number;
@@ -32,7 +32,7 @@ export default function AdminPage() {
     })
       .then((res) => res.json())
       .then(setOverview)
-      .catch(() => {});
+      .catch(console.error);
   }, [user, token, router]);
 
   if (!user || user.role !== "ADMIN") return null;
@@ -89,7 +89,7 @@ export default function AdminPage() {
         })}
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-3 gap-6">
         <Link
           href="/admin/products"
           className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow"
@@ -117,6 +117,21 @@ export default function AdminPage() {
           </div>
           <p className="text-sm text-gray-500">
             {lang === "en" ? "View and manage orders" : "عرض وإدارة الطلبات"}
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/categories"
+          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <Tags size={24} className="text-orange-600" />
+            <h2 className="text-lg font-semibold">
+              {lang === "en" ? "Categories" : "الفئات"}
+            </h2>
+          </div>
+          <p className="text-sm text-gray-500">
+            {lang === "en" ? "Manage menu categories" : "إدارة فئات القائمة"}
           </p>
         </Link>
       </div>

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
 
-export interface CartItem {
+interface CartItem {
   id: string;
   nameEn: string;
   nameAr: string;

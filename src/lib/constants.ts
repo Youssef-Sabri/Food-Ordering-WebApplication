@@ -1,5 +1,3 @@
-export const CATEGORIES = ["All", "Burgers", "Pizza", "Drinks", "Desserts"];
-
 export const CATEGORY_LABELS: Record<string, { en: string; ar: string }> = {
   All: { en: "All", ar: "الكل" },
   Burgers: { en: "Burgers", ar: "برجر" },
@@ -26,7 +24,14 @@ export const STATUS_COLORS: Record<string, string> = {
   CANCELLED: "bg-red-100 text-red-800",
 };
 
+export function imgError(e: React.SyntheticEvent<HTMLImageElement>) {
+  (e.target as HTMLImageElement).style.display = "none";
+}
+
 export function formatPrice(amount: number, lang: string) {
-  const currency = lang === "en" ? "EGP" : "ج.م";
-  return `${amount.toFixed(2)} ${currency}`;
+  const num = amount.toFixed(2);
+  if (lang === "ar") {
+    return `ج.م\u200E ${num}\u200E`;
+  }
+  return `${num} EGP`;
 }

@@ -8,28 +8,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import OrderStepper from "@/components/OrderStepper";
 import { formatPrice } from "@/lib/constants";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { Order } from "@/lib/types";
 import { CheckCircle, Package } from "lucide-react";
-
-interface OrderItem {
-  id: string;
-  quantity: number;
-  price: number;
-  product: {
-    nameEn: string;
-    nameAr: string;
-  };
-}
-
-interface Order {
-  id: string;
-  address: string;
-  paymentMethod: string;
-  paymentStatus: string;
-  totalAmount: number;
-  status: string;
-  createdAt: string;
-  items: OrderItem[];
-}
 
 export default function OrderConfirmationPage() {
   const { lang, dir } = useLanguage();
@@ -59,7 +39,7 @@ export default function OrderConfirmationPage() {
           setOrder(data.order);
         }
       } catch {
-        // ignore
+        console.error("fetchOrder failed");
       } finally {
         if (active) {
           setLoading(false);
@@ -129,7 +109,7 @@ export default function OrderConfirmationPage() {
           {order.items.map((item) => (
             <div key={item.id} className="flex justify-between text-sm">
               <span className="text-gray-600">
-                {lang === "en" ? item.product.nameEn : item.product.nameAr} x{item.quantity}
+                {lang === "en" ? item.product.nameEn : item.product.nameAr} x{`\u200E${item.quantity}\u200E`}
               </span>
                     <span>{formatPrice(item.price * item.quantity, lang)}</span>
             </div>

@@ -36,10 +36,7 @@ export default function Navbar({ onCartClick }: NavbarProps) {
             <LanguageSwitcher />
 
             {user?.role === "ADMIN" && (
-              <Link
-                href="/admin"
-                className="flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors"
-              >
+              <Link href="/admin" className="flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">
                 <LayoutDashboard size={17} />
                 {lang === "en" ? "Admin" : "لوحة التحكم"}
               </Link>

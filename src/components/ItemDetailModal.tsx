@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { Product } from "@/lib/types";
-import { CATEGORY_LABELS, formatPrice } from "@/lib/constants";
+import { CATEGORY_LABELS, formatPrice, imgError } from "@/lib/constants";
 
 interface ItemDetailModalProps {
   product: Product;
@@ -47,9 +47,7 @@ export default function ItemDetailModal({ product, onClose }: ItemDetailModalPro
                 src={product.image}
                 alt={lang === "en" ? product.nameEn : product.nameAr}
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                }}
+                onError={imgError}
               />
             </div>
             <button

@@ -226,7 +226,7 @@ export default function CheckoutPage() {
                 {items.map((item) => (
                   <div key={item.id} className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">
-                      {lang === "en" ? item.nameEn : item.nameAr} x{item.quantity}
+                      {lang === "en" ? item.nameEn : item.nameAr} x{`\u200E${item.quantity}\u200E`}
                     </span>
                     <span>{formatPrice(item.price * item.quantity, lang)}</span>
                   </div>

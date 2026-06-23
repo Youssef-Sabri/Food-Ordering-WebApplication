@@ -8,15 +8,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { STATUS_LABELS, STATUS_COLORS, formatPrice } from "@/lib/constants";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import EmptyState from "@/components/EmptyState";
+import { Order } from "@/lib/types";
 import { Clock, ChevronRight } from "lucide-react";
-
-interface Order {
-  id: string;
-  totalAmount: number;
-  status: string;
-  createdAt: string;
-  items: { id: string; quantity: number; product: { nameEn: string; nameAr: string } }[];
-}
 
 export default function OrdersPage() {
   const { lang, dir } = useLanguage();
@@ -37,7 +30,7 @@ export default function OrdersPage() {
     })
       .then((res) => res.json())
       .then((data) => setOrders(data.orders))
-      .catch(() => {})
+      .catch(console.error)
       .finally(() => setLoading(false));
   }, [user, token, router]);
 

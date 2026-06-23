@@ -10,14 +10,18 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: lang === "ar" ? "غير مصرح" : "Unauthorized" }, { status: 401 });
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: authUser.userId },
-    select: { id: true, name: true, email: true, role: true },
-  });
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: authUser.userId },
+      select: { id: true, name: true, email: true, role: true },
+    });
 
-  if (!user) {
-    return NextResponse.json({ error: lang === "ar" ? "المستخدم غير موجود" : "User not found" }, { status: 404 });
+    if (!user) {
+      return NextResponse.json({ error: lang === "ar" ? "المستخدم غير موجود" : "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ user });
+  } catch {
+    return NextResponse.json({ error: lang === "ar" ? "خطأ في الخادم" : "Server error" }, { status: 500 });
   }
-
-  return NextResponse.json({ user });
 }

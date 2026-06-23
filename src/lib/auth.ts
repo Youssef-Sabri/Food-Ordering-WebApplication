@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 
 const JWT_SECRET = process.env.JWT_SECRET || "fooddash-secret-key-change-in-production";
 
-export interface JWTPayload {
+interface JWTPayload {
   userId: string;
   email: string;
   role: string;

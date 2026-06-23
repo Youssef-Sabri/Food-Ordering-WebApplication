@@ -47,6 +47,13 @@ model Order {
   items         OrderItem[]
 }
 
+model Category {
+  id        String   @id @default(uuid())
+  nameEn    String   @unique
+  nameAr    String
+  createdAt DateTime @default(now())
+}
+
 model OrderItem {
   id        String   @id @default(uuid())
   orderId   String

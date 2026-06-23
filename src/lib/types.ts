@@ -8,3 +8,28 @@ export interface Product {
   price: number;
   image: string;
 }
+
+export interface Category {
+  id: string;
+  nameEn: string;
+  nameAr: string;
+}
+
+export interface OrderItem {
+  id: string;
+  quantity: number;
+  price: number;
+  product: { nameEn: string; nameAr: string };
+}
+
+export interface Order {
+  id: string;
+  user: { id: string; name: string; email: string };
+  address: string;
+  paymentMethod: string;
+  paymentStatus: string;
+  totalAmount: number;
+  status: string;
+  createdAt: string;
+  items: OrderItem[];
+}

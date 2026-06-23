@@ -19,6 +19,19 @@ async function main() {
     },
   });
 
+  const categories = [
+    { nameEn: "Burgers", nameAr: "برجر" },
+    { nameEn: "Pizza", nameAr: "بيتزا" },
+    { nameEn: "Drinks", nameAr: "مشروبات" },
+    { nameEn: "Desserts", nameAr: "حلويات" },
+  ];
+
+  await prisma.category.deleteMany();
+
+  for (const cat of categories) {
+    await prisma.category.create({ data: cat });
+  }
+
   const products = [
     {
       nameEn: "Classic Beef Burger",
@@ -141,11 +154,7 @@ async function main() {
   console.log("Database seeded successfully!");
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
