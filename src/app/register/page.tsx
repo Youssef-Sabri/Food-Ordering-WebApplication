@@ -25,7 +25,7 @@ export default function RegisterPage() {
     try {
       await register(name, email, password, phone);
       router.push("/");
-    } catch (err: unknown) {
+    } catch (err) {
       setError(err instanceof Error ? err.message : (lang === "en" ? "Registration failed" : "فشل إنشاء الحساب"));
     } finally {
       setLoading(false);

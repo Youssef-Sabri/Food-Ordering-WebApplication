@@ -23,7 +23,7 @@ export default function LoginPage() {
     try {
       await login(email, password);
       router.push("/");
-    } catch (err: unknown) {
+    } catch (err) {
       setError(err instanceof Error ? err.message : (lang === "en" ? "Login failed" : "فشل تسجيل الدخول"));
     } finally {
       setLoading(false);

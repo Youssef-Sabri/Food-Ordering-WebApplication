@@ -71,7 +71,7 @@ export default function CheckoutPage() {
 
       clearCart();
       router.push(`/orders/${data.order.id}`);
-    } catch (err: unknown) {
+    } catch (err) {
       setError(err instanceof Error ? err.message : (lang === "en" ? "Checkout failed" : "فشل إتمام الطلب"));
     } finally {
       setLoading(false);
