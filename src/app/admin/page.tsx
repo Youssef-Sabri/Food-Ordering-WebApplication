@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAdminGuard } from "@/lib/hooks";
 import { formatPrice } from "@/lib/constants";
 import { ShoppingBag, DollarSign, Package, LayoutDashboard, ClipboardList, Tags } from "lucide-react";
 
@@ -16,16 +16,12 @@ interface Overview {
 
 export default function AdminPage() {
   const { lang, dir } = useLanguage();
-  const { user, token } = useAuth();
-  const router = useRouter();
+  const { token } = useAuth();
+  const isNotAdmin = useAdminGuard();
   const [overview, setOverview] = useState<Overview | null>(null);
 
   useEffect(() => {
-    if (!user || user.role !== "ADMIN") {
-      router.push("/");
-      return;
-    }
-    if (!token) return;
+    if (isNotAdmin || !token) return;
 
     fetch("/api/admin/overview", {
       headers: { Authorization: `Bearer ${token}` },
@@ -33,9 +29,9 @@ export default function AdminPage() {
       .then((res) => res.json())
       .then(setOverview)
       .catch(console.error);
-  }, [user, token, router]);
+  }, [isNotAdmin, token]);
 
-  if (!user || user.role !== "ADMIN") return null;
+  if (isNotAdmin) return null;
 
   const cards = [
     {

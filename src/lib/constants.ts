@@ -24,6 +24,10 @@ export const STATUS_COLORS: Record<string, string> = {
   CANCELLED: "bg-red-100 text-red-800",
 };
 
+export function getErrorMessage(err: unknown, lang: string, fallbackEn: string, fallbackAr: string): string {
+  return err instanceof Error ? err.message : (lang === "en" ? fallbackEn : fallbackAr);
+}
+
 export function imgError(e: React.SyntheticEvent<HTMLImageElement>) {
   (e.target as HTMLImageElement).style.display = "none";
 }

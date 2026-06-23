@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ErrorBanner from "@/components/ErrorBanner";
-import { formatPrice } from "@/lib/constants";
+import { formatPrice, getErrorMessage } from "@/lib/constants";
 import { CreditCard, DollarSign } from "lucide-react";
 
 export default function CheckoutPage() {
@@ -72,7 +72,7 @@ export default function CheckoutPage() {
       clearCart();
       router.push(`/orders/${data.order.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : (lang === "en" ? "Checkout failed" : "فشل إتمام الطلب"));
+      setError(getErrorMessage(err, lang, "Checkout failed", "فشل إتمام الطلب"));
     } finally {
       setLoading(false);
     }

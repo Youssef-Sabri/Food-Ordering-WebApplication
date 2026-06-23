@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAdminGuard } from "@/lib/hooks";
 import { STATUS_OPTIONS, STATUS_LABELS, STATUS_COLORS, formatPrice } from "@/lib/constants";
 import Pagination from "@/components/Pagination";
 import { Order } from "@/lib/types";
@@ -103,8 +103,8 @@ const ITEMS_PER_PAGE = 10;
 
 export default function AdminOrdersPage() {
   const { lang, dir } = useLanguage();
-  const { user, token } = useAuth();
-  const router = useRouter();
+  const { token } = useAuth();
+  const isNotAdmin = useAdminGuard();
   const [orders, setOrders] = useState<Order[]>([]);
   const [page, setPage] = useState(1);
 
@@ -119,14 +119,11 @@ export default function AdminOrdersPage() {
   }, [token]);
 
   useEffect(() => {
-    if (!user || user.role !== "ADMIN") {
-      router.push("/");
-      return;
-    }
+    if (isNotAdmin) return;
     fetchOrders();
-  }, [user, router, fetchOrders]);
+  }, [isNotAdmin, fetchOrders]);
 
-  if (!user || user.role !== "ADMIN") return null;
+  if (isNotAdmin) return null;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8" dir={dir}>

@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAdminGuard } from "@/lib/hooks";
 import { formatPrice } from "@/lib/constants";
 import { Product, Category } from "@/lib/types";
 import Pagination from "@/components/Pagination";
@@ -15,8 +15,8 @@ const ITEMS_PER_PAGE = 10;
 
 export default function AdminProductsPage() {
   const { lang, dir } = useLanguage();
-  const { user, token } = useAuth();
-  const router = useRouter();
+  const { token } = useAuth();
+  const isNotAdmin = useAdminGuard();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [page, setPage] = useState(1);
@@ -35,15 +35,12 @@ export default function AdminProductsPage() {
   }, []);
 
   useEffect(() => {
-    if (!user || user.role !== "ADMIN") {
-      router.push("/");
-      return;
-    }
+    if (isNotAdmin) return;
     fetchProducts();
     fetch("/api/categories")
       .then((res) => res.json())
       .then((data) => setCategories(data.categories));
-  }, [user, router, fetchProducts]);
+  }, [isNotAdmin, fetchProducts]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,7 +116,7 @@ export default function AdminProductsPage() {
     setShowForm(true);
   };
 
-  if (!user || user.role !== "ADMIN") return null;
+  if (isNotAdmin) return null;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8" dir={dir}>

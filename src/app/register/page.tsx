@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ErrorBanner from "@/components/ErrorBanner";
+import { getErrorMessage } from "@/lib/constants";
 
 export default function RegisterPage() {
   const { lang, dir } = useLanguage();
@@ -26,7 +27,7 @@ export default function RegisterPage() {
       await register(name, email, password, phone);
       router.push("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : (lang === "en" ? "Registration failed" : "فشل إنشاء الحساب"));
+      setError(getErrorMessage(err, lang, "Registration failed", "فشل إنشاء الحساب"));
     } finally {
       setLoading(false);
     }

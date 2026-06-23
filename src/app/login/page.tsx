@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ErrorBanner from "@/components/ErrorBanner";
+import { getErrorMessage } from "@/lib/constants";
 
 export default function LoginPage() {
   const { lang, dir } = useLanguage();
@@ -24,7 +25,7 @@ export default function LoginPage() {
       await login(email, password);
       router.push("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : (lang === "en" ? "Login failed" : "فشل تسجيل الدخول"));
+      setError(getErrorMessage(err, lang, "Login failed", "فشل تسجيل الدخول"));
     } finally {
       setLoading(false);
     }

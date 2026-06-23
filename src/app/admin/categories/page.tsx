@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAdminGuard } from "@/lib/hooks";
 import ErrorBanner from "@/components/ErrorBanner";
 import Pagination from "@/components/Pagination";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -15,8 +15,8 @@ const ITEMS_PER_PAGE = 10;
 
 export default function AdminCategoriesPage() {
   const { lang, dir } = useLanguage();
-  const { user, token } = useAuth();
-  const router = useRouter();
+  const { token } = useAuth();
+  const isNotAdmin = useAdminGuard();
   const [categories, setCategories] = useState<Category[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -33,12 +33,9 @@ export default function AdminCategoriesPage() {
   }, []);
 
   useEffect(() => {
-    if (!user || user.role !== "ADMIN") {
-      router.push("/");
-      return;
-    }
+    if (isNotAdmin) return;
     fetchCategories();
-  }, [user, router, fetchCategories]);
+  }, [isNotAdmin, fetchCategories]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,7 +90,7 @@ export default function AdminCategoriesPage() {
     fetchCategories();
   };
 
-  if (!user || user.role !== "ADMIN") return null;
+  if (isNotAdmin) return null;
 
   if (loading) return <LoadingSpinner />;
 
